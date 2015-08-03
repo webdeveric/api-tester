@@ -1,4 +1,6 @@
 /node_modules
 /private
+/dist
+/lib
 .DS_Store
 ._*

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Testing JS</title>
+<meta charset="utf-8" />
+<style>
+html, body{
+    background: #F9F9F9;
+    color: #555;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font: normal 16px/1.5 'Open Sans', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0 0 1em 0;
+}
+
+header{
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 10;
+    padding: 20px;
+    background: rgba(240, 0, 0, .5);
+    color: #FFF;
+}
+
+main{
+    max-width: 1000px;
+    margin: 0 auto;
+    overflow: hidden;
+    padding: 10vh 10vw;
+    box-sizing: border-box;
+}
+
+fieldset{
+    padding: 0;
+    border: 0;
+}
+
+.row{
+    display: block;
+    margin: 0 0 1em 0;
+}
+
+.row--flex{
+    display: flex;
+}
+
+.input {
+    box-sizing: border-box;
+    border: 1px solid #DDD;
+    color: #333;
+    padding: 10px 20px;
+    margin: 0 auto;
+    font-family: inherit;
+}
+
+.input + .input{
+    border-left: 0;
+}
+
+.input:focus{
+    background: #FFF;
+    border-color: #AAA;
+    box-shadow: inset 0 0 2px 2px rgba(0,0,0,.05);
+}
+
+.input--button {
+    cursor: pointer;
+    background: linear-gradient( to bottom, #FEFEFE 0%, #F5F5F5 100%);
+    color: #666;
+    text-transform: uppercase;
+    font-size: 1em;
+    line-height: 1;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.1);
+}
+
+.input--button:hover{
+}
+
+.input--full-width{
+    width: 100%;
+}
+
+.input--flex{
+    flex: 0 0 auto;
+}
+
+.input--flex--grow{
+    flex-grow: 1;
+}
+
+.input--flex--shrink{
+    flex-shrink: 1;
+}
+
+.input--textarea{
+    min-height: 300px;
+    resize: vertical;
+}
+
+.api-output + .api-output {
+    margin-top: 1em;
+}
+
+.api-output:empty {
+    display: none;
+}
+
+.api-output::before {
+    content: attr(data-label);
+    font-weight: bold;
+    display: block;
+    margin: 0 0 1em 0;
+    border-bottom: 1px solid #DDD;
+}
+
+.api-output--errors {
+    border: 2px solid #C00;
+    background: linear-gradient( to bottom, orangered 0%, #C00 100%);
+    color: #FFF;
+    padding: 1em;
+}
+
+.api-output--headers table{
+    width: 100%;
+    border: 1px solid #BBB;
+    background: #FFF;
+    border-collapse: collapse;
+}
+
+.api-output--headers tr td{
+}
+
+.api-output--headers td,
+.api-output--headers th {
+    padding: 5px 10px;
+    border-bottom: 1px solid #BBB;
+}
+
+.api-output--headers th {
+    background: #F0F0F0;
+    font-weight: bold;
+    text-align: left;
+}
+
+.api-output--response{
+    white-space: pre;
+}
+
+</style>
+</head>
+<body>
+
+<main>
+
+    <nav class="api-nav">
+        <a href="/api-tester/" data-title="API Tester">Home</a>
+        <a href="/api-tester/users/">Users</a>
+        <a href="/api-tester/contests/">Contests</a>
+        <a href="/api-tester/entries/">Entries</a>
+    </nav>
+
+    <h1>API Endpoint Test</h1>
+
+    <form id="api-form">
+
+        <div class="row row--flex">
+            <select name="method" class="input input--select input--flex api-method">
+                <option>GET</option>
+                <option>POST</option>
+                <option>PUT</option>
+                <option>DELETE</option>
+                <option>OPTIONS</option>
+                <option>HEAD</option>
+            </select>
+            <input list="apis" type="text" name="url" placeholder="Enter your API endpoint URL" class="input input--text input--flex input--flex--grow api-url" value="" required />
+            <button type="submit" class="input input--button input--button--submit api-submit">Send</button>
+            <datalist id="apis">
+                <option value="http://unexpected-drives.dev/api/v1/contest/" />
+                <option value="http://unexpected-drives.dev/api/v1/contest/1" />
+                <option value="http://unexpected-drives.dev/api/v1/contest/status" />
+                <option value="http://unexpected-drives.dev/api/v1/contest/current" />
+            </datalist>
+        </div>
+
+        <div class="row row--flex">
+            <input type="text" name="authorization" placeholder="Enter your Authorization header value here" class="input input--text input--flex input--flex--grow api-authorization" value="" />
+        </div>
+
+        <div class="row">
+            <textarea name="data" id="api-data" placeholder="Data" class="input input--textarea input--full-width api-data"></textarea>
+        </div>
+
+        <div class="row api-output api-output--errors" data-label="Errors"></div>
+
+        <div class="row api-output api-output--headers" data-label="Headers"></div>
+
+        <div class="row api-output api-output--response" data-label="Response body"></div>
+
+    </form>
+
+</main>
+
+<script src="/api-tester/dist/main.js"></script>
+
+</body>
+</html>

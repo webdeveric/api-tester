@@ -1,7 +1,8 @@
 // import 'babelify/polyfill';
 import FED from './fed.js';
 import APIForm from './APIForm.js';
-import APIAction from './APIAction.js';
+import APIRequest from './APIRequest.js';
+import APIRequestHandler from './APIRequestHandler.js';
 
 class AdminPanel extends FED.Controller
 {
@@ -58,20 +59,77 @@ window.addEventListener('load', () => {
     });
   });
 
-//   const authAction = new APIAction({
-//     method: 'POST',
-//     url: 'http://unexpected-drives.dev/api/v1/auth',
-//     data: 'email=eric.king@lonelyplanet.com&password=lp1234',
-//     // headers: {
-//     //   authorization: 'bearer ...'
-//     // }
-//     success: ( data ) => {
+  const getTokenRequest = new APIRequest({
+    method: 'POST',
+    url: 'http://unexpected-drives.dev/api/v1/auth',
+  }, ( handler, request ) => {
 
-//     },
-//     failure: ( error ) => {
+    let email = window.sessionStorage.getItem('email'),
+        pass = window.sessionStorage.getItem('pass');
 
-//     }
-//   });
+    while ( ! email ) {
+      email = prompt('What is your email address?');
+      window.sessionStorage.setItem('email', email );
+    }
+
+    while ( ! pass ) {
+      pass = prompt('What is your password?');
+      window.sessionStorage.setItem('pass', pass );
+    }
+
+    request.data = `email=${email}&password=${pass}`;
+  });
+
+  const getEntries = new APIRequest({
+    method: 'GET',
+    url: 'http://unexpected-drives.dev/api/v1/entry/'
+  });
+
+  const RequestHandler = new APIRequestHandler({
+
+    filterRequest: ( handler, request ) => {
+      if ( ! handler.token && request !== getTokenRequest ) {
+
+        console.log( 'Token is missing. Lets try and fix that.' );
+
+        return handler.send( getTokenRequest ).then( ( data ) => {
+
+          if ( data.response.token ) {
+            request.bearer( handler.token = data.response.token );
+            return request;
+          }
+
+          throw new Error('Token not found');
+
+        }, console.error.bind( console ) );
+
+      }
+
+      if ( handler.token ) {
+        request.bearer( handler.token );
+      }
+
+      return Promise.resolve( request );
+    },
+
+    before: ( handler, request ) => {
+      console.log( `Sending request to ${request.url}` );
+    },
+
+    after: ( handler, request, data ) => {
+      // Grab the refresh token.
+      if ( data.headers['authorization'] ) {
+        console.log( handler.token.length, handler.token );
+        handler.token = data.headers['authorization'].replace(/^bearer\s+/i, '');
+        console.info( handler.token.length, handler.token );
+      }
+
+      return data;
+    },
+
+  });
+
+  RequestHandler.send( getEntries ).then( console.log.bind( console ), console.error.bind( console ) );
 
 //   const form = new APIForm(
 //     document.querySelector('#api-form')

@@ -1,7 +1,7 @@
 function typeSetter( field, type, storage )
 {
-  storage[ field ] = null;
-  // process = (v) => { return v; }
+  storage[ field ] = void 0;
+
   switch ( type.toLowerCase() ) {
     case 'string':
       return function setString( value ) { storage[ field ] = value + ''; };

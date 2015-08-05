@@ -1,11 +1,10 @@
-import FED from './fed.js';
+import APIRequest from './APIRequest.js';
+import APIRequestHandler from './APIRequestHandler.js';
 
-class APIForm extends FED.Controller
+class APIForm
 {
-  constructor( form )
+  constructor( form, handler )
   {
-    super();
-
     this.form   = form;
     this.method = this.form.querySelector('.api-method');
     this.url    = this.form.querySelector('.api-url');
@@ -13,17 +12,11 @@ class APIForm extends FED.Controller
     this.button = this.form.querySelector('.api-submit');
     this.data   = this.form.querySelector('.api-data');
 
-    this.headers = Object.create( null );
-
-    this.apiActions = Object.create( null );
-
-    this.authHeader = this.form.querySelector('.api-authorization');
-
     this.errorsOutput   = this.form.querySelector('.api-output--errors');
     this.headersOutput  = this.form.querySelector('.api-output--headers');
     this.responseOutput = this.form.querySelector('.api-output--response');
 
-    this.token = null;
+    this.handler = handler;
 
     this.form.addEventListener( 'submit', this, false );
   }
@@ -42,13 +35,22 @@ class APIForm extends FED.Controller
   {
     e.preventDefault();
 
+    console.log('handleEvent called');
+
+    const request = new APIRequest({
+      method: this.method.value.trim(),
+      url: this.url.value.trim(),
+      data: this.parseData(),
+      // headers: this.headers.value
+    });
+
     const render = this.renderData.bind( this );
 
     const renderError = ( error ) => {
       this.errorsOutput.innerHTML = this.toHTML( error );
     }
 
-    this.submitForm().then( render, renderError );
+    this.handler.send( request ).then( render, renderError );
   }
 
   renderData( data )
@@ -58,20 +60,6 @@ class APIForm extends FED.Controller
     this.responseOutput.innerHTML = this.prettyJSON( data.response );
   }
 
-  parseHeaders( headersString )
-  {
-    const headers = Object.create( null );
-
-    headersString.split(/\r\n|\n|\r/).forEach( ( header ) => {
-      if ( header ) {
-        let [ key, value ] = header.trim().split(/:\s*/);
-        headers[ key.toLowerCase().trim() ] = value.trim();
-      }
-    } );
-
-    return headers;
-  }
-
   parseData()
   {
     const data = this.data.value.trim();
@@ -79,102 +67,6 @@ class APIForm extends FED.Controller
     // const formData = new FormData();
 
     return data === '' ? null : data;
-  }
-
-  loadAction( /* APIAction */ action )
-  {
-    this.method.value = action.method;
-    this.url.value = action.url;
-    this.data.value = action.data;
-    this.headers = action.headers;
-    return this;
-  }
-
-  registerAction( key, /* APIAction */ action )
-  {
-    this.apiActions[ key ] = action;
-  }
-
-  submitForm()
-  {
-    const url = this.url.value.trim(),
-          method = this.method.value.trim(),
-          data   = this.parseData(),
-          headers = this.headers;
-
-    console.log('Submitting form');
-
-    if ( this.authHeader && this.authHeader.value ) {
-      headers['Authorization'] = this.authHeader.value.trim();
-    }
-
-    return this.sendRequest( { url, method, headers, data } );
-  }
-
-  sendRequest( { url, method = 'GET', headers = {}, data = null } )
-  {
-    console.log( `Sending request to ${url}` );
-
-    return new Promise( ( resolve, reject ) => {
-
-      const req = new XMLHttpRequest();
-
-      if ( ! method || ! url ) {
-        reject( new Error('Method and URL are required') );
-        console.log('Request rejected');
-        return;
-      }
-
-      req.withCredentials = true;
-
-      req.onreadystatechange = () => {
-        if ( req.readyState !== XMLHttpRequest.DONE ) {
-          return;
-        }
-
-        let responseHeaders  = req.getAllResponseHeaders(),
-            status = req.status,
-            response = '';
-
-        if ( responseHeaders ) {
-          responseHeaders = this.parseHeaders( responseHeaders );
-        }
-
-        switch( req.getResponseHeader('Content-Type') ) {
-          case 'application/json':
-            response = JSON.parse( req.responseText );
-            break;
-          case 'text/xml':
-            response = req.responseXML;
-            break;
-          case 'text/html':
-            response = `<xmp>${req.responseText}</xmp>`;
-            break;
-          default:
-            response = req.responseText;
-        }
-
-        resolve( {
-          headers: responseHeaders,
-          status,
-          response
-        } );
-
-        console.log('Request resolved');
-      };
-
-      req.open( method, url );
-      req.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-      req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
-      for ( let header in headers ) {
-        req.setRequestHeader( header, headers[ header ] );
-      }
-
-      req.send( data );
-
-      console.log('Request sent');
-    });
   }
 
   getType( data )

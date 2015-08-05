@@ -69,18 +69,19 @@ class Route
     const values = this.regex.exec( document.location.pathname );
     const params = Object.create( null );
 
-    if ( keys ) { // Remove parameter indicator.
-      keys.forEach( ( key, index, data ) => { data[ index ] = key.replace(':', ''); } );
-    }
-
     if ( values ) { // Remove the matched text.
       values.shift();
     }
 
-    for ( let i = 0, l = keys.length ; i < l ; ++i ) {
-      if ( values && values[ i ] !== void 0 ) {
-        params[ keys[ i ] ] = values[ i ];
+    if ( keys ) { // Remove parameter indicator.
+
+      for ( let i = 0, l = keys.length ; i < l ; ++i ) {
+        if ( values && values[ i ] !== void 0 ) {
+          let key = keys[ i ].replace(':', '');
+          params[ key ] = values[ i ];
+        }
       }
+
     }
 
     return params;

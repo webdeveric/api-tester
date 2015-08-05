@@ -1,0 +1,38 @@
+<h1>API Endpoint Test</h1>
+
+<form id="api-form">
+
+    <div class="row row--flex">
+        <select name="method" class="input input--select input--flex api-method">
+            <option>GET</option>
+            <option>POST</option>
+            <option>PUT</option>
+            <option>DELETE</option>
+            <option>OPTIONS</option>
+            <option>HEAD</option>
+        </select>
+        <input list="apis" type="text" name="url" placeholder="Enter your API endpoint URL" class="input input--text input--flex input--flex--grow api-url" value="" required />
+        <button type="submit" class="input input--button input--button--submit api-submit">Send</button>
+        <datalist id="apis">
+            <option value="http://unexpected-drives.dev/api/v1/contest/" />
+            <option value="http://unexpected-drives.dev/api/v1/contest/1" />
+            <option value="http://unexpected-drives.dev/api/v1/contest/status" />
+            <option value="http://unexpected-drives.dev/api/v1/contest/current" />
+        </datalist>
+    </div>
+
+    <div class="row row--flex">
+        <input type="text" name="authorization" placeholder="Enter your Authorization header value here" class="input input--text input--flex input--flex--grow api-authorization" value="" />
+    </div>
+
+    <div class="row">
+        <textarea name="data" id="api-data" placeholder="Data" class="input input--textarea input--full-width api-data"></textarea>
+    </div>
+
+    <div class="row api-output api-output--errors" data-label="Errors"></div>
+
+    <div class="row api-output api-output--headers" data-label="Headers"></div>
+
+    <div class="row api-output api-output--response" data-label="Response body"></div>
+
+</form>

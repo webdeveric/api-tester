@@ -12,7 +12,7 @@ class AdminPanel extends FED.Controller
   }
 }
 
-class HomeController extends FED.Controller
+class PageController extends FED.Controller
 {
   constructor()
   {
@@ -22,6 +22,24 @@ class HomeController extends FED.Controller
   run( { page = 'home' } = {} )
   {
     console.info( `You requested ${page}` );
+    document.getElementById('content').innerHTML = `<p>${page}</p>`;
+  }
+}
+
+class APIFormController extends FED.Controller
+{
+  constructor()
+  {
+    super();
+  }
+
+  run()
+  {
+    window.fetch('/views/api-form.html').then( ( response ) => {
+      return response.text();
+    }).then( ( html ) => {
+      document.getElementById('content').innerHTML = html;
+    });
   }
 }
 
@@ -35,7 +53,8 @@ try {
     new FED.Router('/api-tester/')
   );
 
-  App.router.add( new FED.Route('/:page?', new HomeController ) );
+  App.router.add( new FED.Route('/form', new APIFormController ) );
+  App.router.add( new FED.Route('/:page?', new PageController ) );
   // App.router.add( new FED.Route('/api-tester/admin/:panel/:name?/', function adminPanel( panel, name ) { console.log( panel, name ); } ) );
 
   App.init();
@@ -46,8 +65,15 @@ try {
 
 }
 
+function clearToken()
+{
+  window.sessionStorage.removeItem('api_token');
+  console.log('Token cleared');
+}
 
 window.addEventListener('load', () => {
+
+  document.querySelector('.js-clear-token').addEventListener('click', clearToken, false );
 
   Array.prototype.slice.call(
     document.querySelectorAll('.api-nav > a'),

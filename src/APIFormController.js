@@ -8,11 +8,14 @@ class APIFormController extends FED.Controller
   constructor()
   {
     super();
+
     this.view = new FED.View('/views/api-form.html');
+
+    this.form = null;
 
     this.getTokenRequest = new APIRequest({
       method: 'POST',
-      url: 'http://unexpected-drives.dev/api/v1/auth',
+      url: 'https://unexpected-drives.dev/api/v1/auth',
     }, ( handler, request ) => {
 
       let email = window.sessionStorage.getItem('email'),
@@ -82,21 +85,6 @@ class APIFormController extends FED.Controller
     this.view.set('heading', 'API Tester').renderInto('#content').then( ( element ) => {
       this.form = new APIForm( element.querySelector('form'), this.requestHandler );
     } );
-
-    // const getEntries = new APIRequest({
-    //   method: 'GET',
-    //   url: 'http://unexpected-drives.dev/api/v1/entry/'
-    // });
-
-    // this.requestHandler.send( getEntries ).then( console.log.bind( console ), console.error.bind( console ) );
-
-    //   const form = new APIForm(
-    //     document.querySelector('#api-form')
-    //   );
-
-    //   form.registerAction( 'Authenticate', authAction );
-
-    //   // form.submit();
   }
 }
 

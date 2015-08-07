@@ -80,10 +80,24 @@ class APIFormController extends FED.Controller
     });
   }
 
+  clearToken()
+  {
+    this.requestHandler.token = null;
+    window.sessionStorage.removeItem('api-token');
+    console.log('Token cleared');
+  }
+
   run()
   {
     this.view.set('heading', 'API Tester').renderInto('#content').then( ( element ) => {
-      this.form = new APIForm( element.querySelector('form'), this.requestHandler );
+
+      this.form = new APIForm(
+        element.querySelector('form'),
+        this.requestHandler
+      );
+
+      element.querySelector('.js-clear-token').addEventListener('click', this.clearToken.bind( this ), false );
+
     } );
   }
 }

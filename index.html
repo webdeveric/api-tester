@@ -19,14 +19,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 header{
-    position: fixed;
-    top: 0;
-    right: 0;
-    left: 0;
-    z-index: 10;
-    padding: 20px;
-    background: rgba(240, 0, 0, .5);
-    color: #FFF;
+
 }
 
 main{
@@ -82,24 +75,24 @@ fieldset{
 .input--button:hover{
 }
 
-.input--full-width{
+.full-width{
     width: 100%;
 }
 
-.input--flex{
+.flex{
     flex: 0 0 auto;
 }
 
-.input--flex--grow{
+.flex--grow{
     flex-grow: 1;
 }
 
-.input--flex--shrink{
+.flex--shrink{
     flex-shrink: 1;
 }
 
 .input--textarea{
-    min-height: 300px;
+    min-height: 150px;
     resize: vertical;
 }
 
@@ -157,20 +150,7 @@ fieldset{
 <body>
 
 <main>
-
-    <nav class="api-nav">
-        <a href="/api-tester/form" data-title="API Tester form">Form</a>
-        <a href="/api-tester/users/">Users</a>
-        <a href="/api-tester/contests/">Contests</a>
-        <a href="/api-tester/entries/">Entries</a>
-    </nav>
-
-    <p>
-      <a href="#" class="js-clear-token">Clear token</a>
-    </p>
-
-   <div id="content"></div>
-
+  <div id="content"></div>
 </main>
 
 <script src="/dist/main.js"></script>

@@ -8,9 +8,9 @@ class APIForm
     this.form   = form;
     this.method = this.form.querySelector('.api-method');
     this.url    = this.form.querySelector('.api-url');
-    this.data   = this.form.querySelectorAll('.api-data');
     this.button = this.form.querySelector('.api-submit');
     this.data   = this.form.querySelector('.api-data');
+    this.photo  = this.form.querySelector('.api-photo');
 
     this.errorsOutput   = this.form.querySelector('.api-output--errors');
     this.headersOutput  = this.form.querySelector('.api-output--headers');
@@ -40,9 +40,13 @@ class APIForm
     const request = new APIRequest({
       method: this.method.value.trim(),
       url: this.url.value.trim(),
-      data: this.parseData(),
-      // headers: this.headers.value
     });
+
+    request.setData( this.parseData( this.data.value ) );
+
+    if ( this.photo && this.photo.files[0] ) {
+      request.data.set("photo", this.photo.files[0] );
+    }
 
     const render = this.renderData.bind( this );
 
@@ -55,18 +59,24 @@ class APIForm
 
   renderData( data )
   {
-    console.log( data );
+    // console.log( data );
     this.headersOutput.innerHTML = this.toHTML( data.headers );
     this.responseOutput.innerHTML = this.prettyJSON( data.response );
   }
 
-  parseData()
+  parseData( data )
   {
-    const data = this.data.value.trim();
+    const parsed = Object.create( null );
+    const parts = data.trim().split("&").map( d => d.split('=') );
 
-    // const formData = new FormData();
+    parts.forEach( ( part ) => {
+      const [ key, value ] = part;
+      if ( key && value ) {
+        parsed[ key ] = value;
+      }
+    });
 
-    return data === '' ? null : data;
+    return parsed;
   }
 
   getType( data )

@@ -18,24 +18,25 @@ class APIFormController extends FED.Controller
       url: 'https://unexpected-drives.dev/api/v1/auth',
     }, ( handler, request ) => {
 
-      let email = window.sessionStorage.getItem('email'),
-          pass = window.sessionStorage.getItem('pass');
+      let email = window.localStorage.getItem('email'),
+          pass = window.localStorage.getItem('pass');
 
       while ( ! email ) {
         email = prompt('What is your email address?');
-        window.sessionStorage.setItem('email', email );
+        window.localStorage.setItem('email', email );
       }
 
       while ( ! pass ) {
         pass = prompt('What is your password?');
-        window.sessionStorage.setItem('pass', pass );
+        window.localStorage.setItem('pass', pass );
       }
 
-      request.data = `email=${email}&password=${pass}`;
+      request.data.set("email", email );
+      request.data.set("password", pass );
     });
 
     this.requestHandler = new APIRequestHandler({
-      token: window.sessionStorage.getItem('api-token'),
+      token: window.localStorage.getItem('api-token'),
 
       filterRequest: ( handler, request ) => {
 
@@ -46,7 +47,7 @@ class APIFormController extends FED.Controller
           return handler.send( this.getTokenRequest ).then( ( data ) => {
 
             if ( data.response.token ) {
-              window.sessionStorage.setItem('api-token', handler.token = data.response.token );
+              window.localStorage.setItem('api-token', handler.token = data.response.token );
               request.bearer( handler.token );
               return request;
             }
@@ -83,7 +84,7 @@ class APIFormController extends FED.Controller
   clearToken()
   {
     this.requestHandler.token = null;
-    window.sessionStorage.removeItem('api-token');
+    window.localStorage.removeItem('api-token');
     console.log('Token cleared');
   }
 

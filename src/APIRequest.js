@@ -10,21 +10,25 @@ class APIRequest extends FED.Model
       fields: {
         method: 'string',
         url: 'string',
-        data: 'string',
+        data: 'object',
         headers: 'object'
       },
       attributes
     } );
+
+    this.data = new FormData();
+    this.headers = Object.create( null );
+
+    if ( this.method.toUpperCase() === 'PUT' ) {
+      this.method = 'POST';
+      this.data.set('_method', 'PUT');
+    }
 
     this.before = before;
   }
 
   header( key, value )
   {
-    if ( ! this.headers ) {
-      this.headers = Object.create( null );
-    }
-
     this.headers[ key.trim() ] = value.trim();
     return this;
   }
@@ -32,6 +36,13 @@ class APIRequest extends FED.Model
   bearer( token )
   {
     return this.header('Authorization', `Bearer ${token}`);
+  }
+
+  setData( data = {} )
+  {
+    for ( let key in data ) {
+      this.data.set( key, data[ key ] );
+    }
   }
 }
 

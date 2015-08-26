@@ -80,7 +80,6 @@ class APIRequestHandler
 
       xhr.open( request.method, request.url );
       xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
       if ( request.headers ) {
         for ( let header in request.headers ) {

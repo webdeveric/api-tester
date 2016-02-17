@@ -56,7 +56,11 @@ class APIRequestHandler
           responseHeaders = this.parseHeaders( responseHeaders );
         }
 
-        switch( xhr.getResponseHeader('Content-Type') ) {
+        let contentType = xhr.getResponseHeader('Content-Type');
+
+        contentType = contentType.split(/;\s*/)[ 0 ];
+
+        switch( contentType ) {
           case 'application/json':
             response = JSON.parse( xhr.responseText );
             break;
